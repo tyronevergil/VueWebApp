@@ -14,11 +14,19 @@ namespace WebApplication
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).
-                UseKestrel().
-                UseUrls("http://*:" + Environment.GetEnvironmentVariable("PORT")).
-                Build().
-                Run();
+            var port = Environment.GetEnvironmentVariable("PORT");
+            if (string.IsNullOrWhiteSpace(port))
+            {
+                CreateWebHostBuilder(args).Build().Run();
+            }
+            else
+            {
+                CreateWebHostBuilder(args).
+                    UseKestrel().
+                    UseUrls("http://*:" + port).
+                    Build().
+                    Run();
+            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
