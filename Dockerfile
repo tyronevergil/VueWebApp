@@ -18,7 +18,7 @@ FROM build AS publish
 RUN apt-get update && \
 apt-get install -y wget && \
 apt-get install -y gnupg2 && \
-wget -qO- https://deb.nodesource.com/setup_8.x | bash - && \
+wget -qO- https://deb.nodesource.com/setup_12.x | bash - && \
 apt-get install -y build-essential nodejs
 # End Install
 RUN dotnet publish "WebApplication.csproj" -c Release -o /app/publish
