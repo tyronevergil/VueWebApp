@@ -30,7 +30,7 @@ namespace SimpleBus
             Process(command, activity.EventId);
         }
 
-        private void Process(IMessage message, string eventId)
+        public void Process(IMessage message, string eventId)
         {
             var messageType = message.GetType();
             var handlerType = typeof(IMessageHandler<>).MakeGenericType(messageType);

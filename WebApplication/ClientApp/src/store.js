@@ -18,9 +18,27 @@ function startHub(store) {
 
             console.log('Hub connected!')
 
+            function loadData() {
+                axios.get('/api/Query/Tasks')
+                    .then(function (response) {
+                        if (response.data) {
+                            var d = [0, store.state.Tasks.length].concat(response.data)
+                            store.state.Tasks.splice.apply(store.state.Tasks, d)
+                        }
+                    });
+
+                axios.get('/api/Query/TaskTypes')
+                    .then(function (response) {
+                        if (response.data) {
+                            var d = [0, store.state.TaskTypes.length].concat(response.data)
+                            store.state.TaskTypes.splice.apply(store.state.TaskTypes, d)
+                        }
+                    });
+            }
+
             hubConnection.on('task.created', (result) => {
                 var data = JSON.parse(result);
-                axios.get('/api/Tasks/' + data.Id)
+                axios.get('/api/Query/Tasks/' + data.Id)
                     .then(function(response) {
                         if (response.data) {
                             store.commit('addTask', response.data)
@@ -30,7 +48,7 @@ function startHub(store) {
 
             hubConnection.on('task.completed', (result) => {
                 var data = JSON.parse(result);
-                axios.get('/api/Tasks/' + data.Id)
+                axios.get('/api/Query/Tasks/' + data.Id)
                     .then(function(response) {
                         if (response.data) {
                             store.commit('editTask', response.data)
@@ -40,12 +58,17 @@ function startHub(store) {
 
             hubConnection.on('tasktype.created', (result) => {
                 var data = JSON.parse(result);
-                axios.get('/api/TaskTypes/' + data.Id)
+                axios.get('/api/Query/TaskTypes/' + data.Id)
                     .then(function(response) {
                         if (response.data) {
                             store.commit('addTaskType', response.data)
                         }
                     });
+            })
+
+            hubConnection.on('event.replay', () => {
+                console.log("Replay...");
+                loadData();
             })
 
             hubConnection.onclose(() => {
@@ -56,21 +79,7 @@ function startHub(store) {
                 }, 5000)
             })
 
-            axios.get('/api/Tasks')
-                .then(function(response) {
-                    if (response.data) {
-                        var d = [0, store.state.Tasks.length].concat(response.data)
-                        store.state.Tasks.splice.apply(store.state.Tasks, d)
-                    }
-                });
-
-            axios.get('/api/TaskTypes')
-                .then(function(response) {
-                    if (response.data) {
-                        var d = [0, store.state.TaskTypes.length].concat(response.data)
-                        store.state.TaskTypes.splice.apply(store.state.TaskTypes, d)
-                    }
-                });
+            loadData();
         })
         .catch(() => {
             console.log("Hub error connecting.")

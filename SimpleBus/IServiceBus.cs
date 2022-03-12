@@ -5,5 +5,6 @@ namespace SimpleBus
     public interface IServiceBus
     {
         void Send<T>(T command) where T : ICommandMessage;
+        void Process(IMessage message, string eventId);
     }
 }
