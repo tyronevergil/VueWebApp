@@ -41,6 +41,8 @@ namespace WebApplication
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            app.UseMiddleware<MessageHandlerMiddleware>();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
